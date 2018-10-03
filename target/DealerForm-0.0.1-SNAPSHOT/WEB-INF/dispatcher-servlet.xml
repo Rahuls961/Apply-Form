@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd       
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- @Controller, @Service, @Configuration, etc. -->
+	<context:component-scan base-package="com.cuas" />
+
+	<!-- find auto annotations -->
+	<mvc:annotation-driven />
+
+	<!-- Autowired Annotation -->
+	<context:annotation-config />
+
+	<!-- Declares mvc:resources, to map “url path” to a physical file path location. -->
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+
+	<bean id="dealerService" class="com.cuas.service.DealerServiceImp" />
+
+
+	<!-- MySQL -->
+	<bean id="dealerDao" class="com.cuas.dao.DealerDaoImp">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+	<!-- Change Language According to Locale Language -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="application" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	
+	<!-- Default Session Localization set -->
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="tr" />
+	</bean>
+	
+	<!-- Provides İnternationalization : Change current local after every HTTP 
+		Request : Auto detect local language -->
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor"
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="lang" />
+		</bean>
+	</mvc:interceptors>
+	<!-- end Change Language According to Locale Language -->
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+
+	<!-- Url pattern restrict -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="useDefaultSuffixPattern" value="false" />
+	</bean>
+</beans>
